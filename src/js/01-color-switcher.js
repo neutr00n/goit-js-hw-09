@@ -1,5 +1,5 @@
 const refs = {
-  strartBtn: document.querySelector('button[data-start]'),
+  startBtn: document.querySelector('button[data-start]'),
   stopBtn: document.querySelector('button[data-stop]'),
 };
 
@@ -7,19 +7,26 @@ const TIME_DELAY = 1000;
 let timerId = null;
 refs.stopBtn.disabled = true;
 
-refs.strartBtn.addEventListener('click', handleStartBtnClick);
+refs.startBtn.addEventListener('click', handleStartBtnClick);
 refs.stopBtn.addEventListener('click', handleStopBtnClick);
 
 function handleStartBtnClick(e) {
   timeDelayChangeBgColor();
-  e.target.disabled = true;
-  refs.stopBtn.disabled = false;
+  disabledBtnStatusOnStartBtnClick(e);
 }
 
 function handleStopBtnClick(e) {
   clearInterval(timerId);
+  disabledBtnStatusOnStopBtnClick(e);
+}
+
+function disabledBtnStatusOnStartBtnClick(e) {
   e.target.disabled = true;
-  refs.strartBtn.disabled = false;
+  refs.stopBtn.disabled = false;
+}
+function disabledBtnStatusOnStopBtnClick(e) {
+  e.target.disabled = true;
+  refs.startBtn.disabled = false;
 }
 
 function timeDelayChangeBgColor() {

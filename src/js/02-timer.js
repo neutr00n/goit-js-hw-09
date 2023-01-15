@@ -27,12 +27,12 @@ const options = {
   defaultDate: new Date(),
   minuteIncrement: 1,
 
-  onClose(selectedDates) {
-    if (selectedDates[0] < Date.now()) {
+  onClose([selectedDates]) {
+    if (isDateCorrect(selectedDates)) {
       Notify.failure('Please choose a date in the future');
-      return;
     }
-    refs.startBtn.disabled = false;
+
+    refs.startBtn.disabled = isDateCorrect(selectedDates);
   },
 };
 
@@ -82,28 +82,19 @@ class Timer {
     this.updateTimerFace(time);
   }
 
-  addLeadingZero(value) {
-    return String(value).padStart(2, '0');
-  }
-
   convertMs(ms) {
     const second = 1000;
     const minute = second * 60;
     const hour = minute * 60;
     const day = hour * 24;
 
-    const days = this.addLeadingZero(Math.floor(ms / day));
+    const days = Math.floor(ms / day);
 
-    const hours = this.addLeadingZero(Math.floor((ms % day) / hour));
+    const hours = Math.floor((ms % day) / hour);
 
-    const minutes = this.addLeadingZero(
-      Math.floor(((ms % day) % hour) / minute)
-    );
+    const minutes = Math.floor(((ms % day) % hour) / minute);
 
-    const seconds = this.addLeadingZero(
-      Math.floor((((ms % day) % hour) % minute) / second)
-    );
-
+    const seconds = Math.floor((((ms % day) % hour) % minute) / second);
     return { days, hours, minutes, seconds };
   }
 }
@@ -113,10 +104,14 @@ const timer = new Timer({
 });
 
 function updateTimerFace({ days, hours, minutes, seconds }) {
-  refs.daysField.textContent = days;
-  refs.hoursField.textContent = hours;
-  refs.minutesField.textContent = minutes;
-  refs.secondsField.textContent = seconds;
+  refs.daysField.textContent = addLeadingZero(days);
+  refs.hoursField.textContent = addLeadingZero(hours);
+  refs.minutesField.textContent = addLeadingZero(minutes);
+  refs.secondsField.textContent = addLeadingZero(seconds);
+}
+
+function addLeadingZero(value) {
+  return String(value).padStart(2, '0');
 }
 
 refs.startBtn.addEventListener('click', handleStartBtnClick);
@@ -129,4 +124,8 @@ function handleStartBtnClick(e) {
 
 function handleStopBtnClick(e) {
   timer.stop();
+}
+
+function isDateCorrect(selectedDates) {
+  return selectedDates < Date.now();
 }
